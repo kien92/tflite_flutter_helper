@@ -41,9 +41,9 @@ const val METHOD_CHANNEL_NAME = "com.tfliteflutter.tflite_flutter_helper:methods
 
 /** TfliteFlutterHelperPlugin */
 class TfliteFlutterHelperPlugin : FlutterPlugin,
-		MethodCallHandler,
-		PluginRegistry.RequestPermissionsResultListener,
-		ActivityAware {
+	MethodCallHandler,
+	PluginRegistry.RequestPermissionsResultListener,
+	ActivityAware {
 
 
 	private val LOG_TAG = "TfLiteFlutterHelperPlugin"
@@ -84,7 +84,7 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 				else -> result.notImplemented()
 			}
 		} catch (e: Exception) {
-			Log.e(LOG_TAG, "Unexpected exception", e)
+//            Log.e(LOG_TAG, "Unexpected exception", e)
 			// TODO: implement result.error
 		}
 	}
@@ -121,8 +121,10 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 		if (permissionToRecordAudio) return true
 
 		val localContext = pluginContext
-		permissionToRecordAudio = localContext != null && ContextCompat.checkSelfPermission(localContext,
-				Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+		permissionToRecordAudio = localContext != null && ContextCompat.checkSelfPermission(
+			localContext,
+			Manifest.permission.RECORD_AUDIO
+		) == PackageManager.PERMISSION_GRANTED
 		return permissionToRecordAudio
 
 	}
@@ -135,13 +137,18 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 		val localActivity = currentActivity
 		if (!hasRecordPermission() && localActivity != null) {
 			debugLog("requesting RECORD_AUDIO permission")
-			ActivityCompat.requestPermissions(localActivity,
-					arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_RECORD_PERMISSION_CODE)
+			ActivityCompat.requestPermissions(
+				localActivity,
+				arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_RECORD_PERMISSION_CODE
+			)
 		}
 	}
 
-	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?,
-											grantResults: IntArray?): Boolean {
+	override fun onRequestPermissionsResult(
+		requestCode: Int,
+		permissions: Array<out String>,
+		grantResults: IntArray
+	): Boolean {
 		when (requestCode) {
 			AUDIO_RECORD_PERMISSION_CODE -> {
 				if (grantResults != null) {
@@ -155,10 +162,15 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 		return false
 	}
 
+
 	private fun initializeRecorder(@NonNull call: MethodCall, @NonNull result: Result) {
 		mRecordSampleRate = call.argument<Int>("sampleRate") ?: mRecordSampleRate
 		debugLogging = call.argument<Boolean>("showLogs") ?: false
-		mPeriodFrames = AudioRecord.getMinBufferSize(mRecordSampleRate, AudioFormat.CHANNEL_IN_MONO, mRecordFormat)
+		mPeriodFrames = AudioRecord.getMinBufferSize(
+			mRecordSampleRate,
+			AudioFormat.CHANNEL_IN_MONO,
+			mRecordFormat
+		)
 		mRecorderBufferSize = mPeriodFrames * 2
 		audioData = ShortArray(mPeriodFrames)
 		activeResult = result
@@ -168,8 +180,10 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 			completeInitializeRecorder()
 			return
 		}
-		permissionToRecordAudio = ContextCompat.checkSelfPermission(localContext,
-				Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+		permissionToRecordAudio = ContextCompat.checkSelfPermission(
+			localContext,
+			Manifest.permission.RECORD_AUDIO
+		) == PackageManager.PERMISSION_GRANTED
 		if (!permissionToRecordAudio) {
 			requestRecordPermission()
 		} else {
@@ -183,7 +197,13 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 		if (mRecorder?.state == AudioRecord.STATE_INITIALIZED) {
 			return
 		}
-		mRecorder = AudioRecord(MediaRecorder.AudioSource.MIC, mRecordSampleRate, AudioFormat.CHANNEL_IN_MONO, mRecordFormat, mRecorderBufferSize)
+		mRecorder = AudioRecord(
+			MediaRecorder.AudioSource.MIC,
+			mRecordSampleRate,
+			AudioFormat.CHANNEL_IN_MONO,
+			mRecordFormat,
+			mRecorderBufferSize
+		)
 		if (mRecorder != null) {
 			mListener = createRecordListener()
 			mRecorder?.positionNotificationPeriod = mPeriodFrames
@@ -219,7 +239,7 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 
 	private fun debugLog(msg: String) {
 		if (debugLogging) {
-			Log.d(LOG_TAG, msg)
+//            Log.d(LOG_TAG, msg)
 		}
 	}
 
@@ -235,7 +255,11 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 			result.success(true)
 		} catch (e: IllegalStateException) {
 			debugLog("record() failed")
-			result.error(SoundStreamErrors.FailedToRecord.name, "Failed to start recording", e.localizedMessage)
+			result.error(
+				SoundStreamErrors.FailedToRecord.name,
+				"Failed to start recording",
+				e.localizedMessage
+			)
 		}
 	}
 
@@ -250,7 +274,11 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 			result.success(true)
 		} catch (e: IllegalStateException) {
 			debugLog("record() failed")
-			result.error(SoundStreamErrors.FailedToRecord.name, "Failed to start recording", e.localizedMessage)
+			result.error(
+				SoundStreamErrors.FailedToRecord.name,
+				"Failed to start recording",
+				e.localizedMessage
+			)
 		}
 	}
 
@@ -276,4 +304,6 @@ class TfliteFlutterHelperPlugin : FlutterPlugin,
 			}
 		}
 	}
+
+
 }
