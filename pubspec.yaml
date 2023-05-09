@@ -18,6 +18,11 @@ dependencies:
       url: https://github.com/kien92/tflite_flutter_plugin.git
       ref: master
   tuple: ^2.0.0
+  camera:
+    git:
+      url: https://github.com/Techainer/flutter-plugins.git
+      ref: fix_iphone6_crashapp
+      path: packages/camera/camera
   ffi: ^1.0.0
   image: ^3.0.2
 dev_dependencies:
